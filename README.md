@@ -15,6 +15,6 @@ toolchain : gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux
 # Introduction
 
 * The floder lora_gateway contained all the HAL library to be used to driver SX1301.
-* The floder packet_forwarder is a offical example where the process of SX1301's configuration has cantained.
-* The floder lora_bridge writen by me aims to realize transparent transmission function.
+* The floder packet_forwarder is a offical example where the process of SX1301's configuration has contained.
+* The floder lora_bridge written by me aims to realize transparent transmission function.
 
