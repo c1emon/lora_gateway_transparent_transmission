@@ -2,58 +2,71 @@
 	"SX1301_conf": {
 	"lorawan_public": false,
 	"clksrc": 1,
+	"lbt_cfg": {
+		"enable": false,
+		"rssi_target": -80, /* dBm */
+		"chan_cfg":[ /* 8 channels maximum */
+			{ "freq_hz": 867100000, "scan_time_us": 128 },
+			{ "freq_hz": 867300000, "scan_time_us": 5000 },
+			{ "freq_hz": 867500000, "scan_time_us": 128 },
+			{ "freq_hz": 869525000, "scan_time_us": 128 }
+		],
+		"sx127x_rssi_offset": -4 /* dB */
+	},
 	"radio_0": {
 		"enable": true,
 		"type": "SX1255",
 		"freq": 472600000,
 		"rssi_offset": -166.0,
-		"tx_enable": true
+		"tx_enable": true,
+		"tx_notch_freq": 129000  /* [126..250] KHz */
 	},
 	"radio_1": {
 		"enable": true,
 		"type": "SX1255",
 		"freq": 471600000,
 		"rssi_offset": -166.0,
-		"tx_enable": false
+		"tx_enable": false,
+		"tx_notch_freq": 129000  /* [126..250] KHz */
 	},
 	"chan_multiSF_0": {
 		"enable": true,
-		"radio": 1,
+		"radio": 0,
 		"if": -300000
 	},
 	"chan_multiSF_1": {
 		"enable": true,
-		"radio": 1,
+		"radio": 0,
 		"if": -100000
 	},
 	"chan_multiSF_2": {
 		"enable": true,
-		"radio": 1,
+		"radio": 0,
 		"if": 100000
 	},
 	"chan_multiSF_3": {
 		"enable": true,
-		"radio": 1,
+		"radio": 0,
 		"if": 300000
 	},
 	"chan_multiSF_4": {
 		"enable": true,
-		"radio": 0,
+		"radio": 1,
 		"if": -300000
 	},
 	"chan_multiSF_5": {
 		"enable": true,
-		"radio": 0,
+		"radio": 1,
 		"if": -100000
 	},
 	"chan_multiSF_6": {
 		"enable": true,
-		"radio": 0,
+		"radio": 1,
 		"if": 100000
 	},
 	"chan_multiSF_7": {
 		"enable": true,
-		"radio": 0,
+		"radio": 1,
 		"if": 300000
 	},
 	"chan_Lora_std": {
@@ -64,7 +77,7 @@
 		"spread_factor": 7
 	},
 	"chan_FSK": {
-		"enable": false,
+		"enable": true,
 		"radio": 1,
 		"if": 300000,
 		"bandwidth": 125000,
@@ -199,19 +212,9 @@
 		"dac_gain":3
 	}
 	},
-	"gateway_conf": {
-		"gateway_ID": "B827EBFFFE1CECD0",
-		"server_address": "127.0.0.1",
-		"serv_port_up": 1680,
-		"serv_port_down": 1680,
-		"keepalive_interval": 10,
-		"stat_interval": 30,
-		"push_timeout_ms": 100,
-		/* forward only valid packets */
-		"forward_crc_valid": true,
-		"forward_crc_error": true,
-		"forward_crc_disabled": true,
-		/* GPS configuration */
-		"gps_tty_path": "/dev/ttyAMA0"
+	"net_conf": {
+		"ip_addr" : "127.0.0.1",
+		"port_down" : 8010,
+		"port_up" : 8011
 	}
 }

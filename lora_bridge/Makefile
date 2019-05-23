@@ -5,6 +5,9 @@ CROSS_COMPILE ?= arm-linux-gnueabihf-
 CC := $(CROSS_COMPILE)gcc
 AR := $(CROSS_COMPILE)ar
 
+OBJDIR = obj
+INCLUDES = $(wildcard inc/*.h)
+
 CFLAGS=-O2 -Wall -Wextra -std=c99 -Iinc -I.
 
 ## set liblgw path
@@ -36,14 +39,17 @@ $(LGW_PATH)/libloragw.a: $(LGW_INC)
 
 ### Main program compilation and assembly
 
-obj/parson.o: src/parson.c inc/parson.h
+$(OBJDIR)/parson.o: src/parson.c inc/parson.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-obj/$(APP_NAME).o: src/$(APP_NAME).c $(LGW_INC) inc/parson.h
+$(OBJDIR)/parson_config.o: src/parson_config.c inc/parson_config.h
 	$(CC) -c $(CFLAGS) -I$(LGW_PATH)/inc $< -o $@
 
-$(APP_NAME): obj/$(APP_NAME).o $(LGW_PATH)/libloragw.a obj/parson.o
-	$(CC) -L$(LGW_PATH) $< obj/parson.o -o $@ $(LIBS)
+$(OBJDIR)/$(APP_NAME).o: src/$(APP_NAME).c $(LGW_INC) inc/parson.h inc/parson_config.h
+	$(CC) -c $(CFLAGS) -I$(LGW_PATH)/inc $< -o $@
+
+$(APP_NAME): $(OBJDIR)/$(APP_NAME).o $(LGW_PATH)/libloragw.a $(OBJDIR)/parson.o $(OBJDIR)/parson_config.o
+	$(CC) -L$(LGW_PATH) $< $(OBJDIR)/parson.o $(OBJDIR)/parson_config.o -o $@ $(LIBS)
 
 ### EOF
 
