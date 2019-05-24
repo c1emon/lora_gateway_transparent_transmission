@@ -27,16 +27,14 @@
 
 #include "parson_config.h" /* parson json */
 
-pthread_mutex_t work_mutex;
 
-/* -------------------------------------------------------------------------- */
-/* ----- type --------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------------- */
-/* --- PRIVATE MACROS ------------------------------------------------------- */
 
 /* -------------------------------------------------------------------------- */
 struct net_info_s net_info = {0};
+int socket_fd = 0;
+/* -------------------------------------------------------------------------- */
+pthread_mutex_t work_mutex;
+/* -------------------------------------------------------------------------- */
 struct lgw_conf_board_s SX1301_configBoard = {0};  //configure struct of sx1301
 struct lgw_tx_gain_lut_s SX1301_configTXlut = {0}; //configure struct of sx1301 tx
 struct lgw_conf_rxrf_s SX1301_configRXrf[RF_Chain_SIZE] = {0};
@@ -45,21 +43,15 @@ struct lgw_conf_rxif_s SX1301_configLoraStd = {0};
 struct lgw_conf_rxif_s SX1301_configFSK = {0};
 struct lgw_pkt_rx_s rxpkt[TX_GAIN_LUT_SIZE] = {0}; /* array containing up to 16 inbound packets metadata */
 /* -------------------------------------------------------------------------- */
-/* signal handling variables */
-struct sigaction sigact; /* SIGQUIT&SIGINT&SIGTERM signal handling */
-static int exit_sig = 0; /* 1 -> application terminates cleanly (shut down hardware, close open files, etc) */
-static int quit_sig = 0; /* 1 -> application terminates without shutting down the hardware */
-
-static void sig_handler(int sigio)
+static void sig_handler(int signo)
 {
-	if (sigio == SIGQUIT)
-	{
-		quit_sig = 1;
-	}
-	else if ((sigio == SIGINT) || (sigio == SIGTERM))
-	{
-		exit_sig = 1;
-	}
+	lgw_stop();
+	close(socket_fd);
+	pthread_mutex_destroy(&work_mutex);
+
+	MSG("INFO: Lora_bridge exited.\n");
+
+	exit(0);
 }
 /* -------------------------------------------------------------------------- */
 
@@ -319,12 +311,7 @@ void *thread_gw_recv(void *socket_fd)
 int main(void)
 {
 	/* configure signal handling */
-	sigemptyset(&sigact.sa_mask);
-	sigact.sa_flags = 0;
-	sigact.sa_handler = sig_handler;
-	sigaction(SIGQUIT, &sigact, NULL);
-	sigaction(SIGINT, &sigact, NULL);
-	sigaction(SIGTERM, &sigact, NULL);
+	signal(SIGINT, sig_handler);
 	/****************************/
 	parseAllConfig(); //parse
 
@@ -336,7 +323,7 @@ int main(void)
 	pthread_t gw_send_t, gw_recv_t;
 
 	/****************************/
-	int socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
+	socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
 	if (socket_fd < 0)
 	{
 		MSG("socket build fail");
@@ -367,23 +354,13 @@ int main(void)
 		exit(1);
 	}
 
+	MSG("INFO: All threads created success.\n");
+	SHOW_LINE;
+
 	pthread_join(gw_recv_t, NULL);
 	pthread_join(gw_send_t, NULL);
 
 	/****************************/
-	if ((quit_sig == 1) || (exit_sig == 1))
-	{
-		lgw_stop();
-		close(socket_fd);
-		pthread_mutex_destroy(&work_mutex);
-
-		printf("exited\n");
-
-		exit(1);
-		return SUCCESS;
-	}
-
-	/* clean up before leaving */
 
 	return SUCCESS;
 }
