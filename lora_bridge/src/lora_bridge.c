@@ -159,9 +159,9 @@ static STATUS loraGW_Start(void)
 	do
 	{
 		--i;
-		wait_ms(450);
-		system(cmd);
 		wait_ms(50);
+		system(cmd);
+		wait_ms(450);
 		loraGW_Init();
 	} while ((lgw_start() != LGW_HAL_SUCCESS) && (i));
 	
