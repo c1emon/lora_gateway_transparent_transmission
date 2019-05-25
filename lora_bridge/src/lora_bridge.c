@@ -196,7 +196,7 @@ STATUS loraGW_Send(char *msg_TX, uint16_t msg_Len)
 		MSG("ERR: Send data: \"%s\" fail\n", txpkt.payload);
 		return FAIL;
 	}
-	MSG("INFO: Sending\"%s\"...\n", txpkt.payload);
+	MSG("INFO: Sending \"%s\"...\n", txpkt.payload);
 	do
 	{
 		wait_ms(5);
@@ -216,15 +216,23 @@ static int loraGW_Receive(void)
 
 	if (nb_pkt)
 	{
-		MSG("INFO : Receive OK , pkg_num = %d\n", nb_pkt);
+		MSG("INFO : Get %d packaegs.\n", nb_pkt);
 		for (int i = 0; i < nb_pkt; i++)
 		{
-			MSG("INFO : PKG[%d] : ", i);
-			for (int j = 0; j < rxpkt[i].size; ++j)
+			if (rxpkt[i].status == STAT_CRC_OK)//add crc check
 			{
-				MSG("%c", rxpkt[i].payload[j]);
+				MSG("INFO : PKG[%d] : ", i);
+				for (int j = 0; j < rxpkt[i].size; ++j)
+				{
+					MSG("%c", rxpkt[i].payload[j]);
+				}
+				MSG("\n");
 			}
-			MSG("\n");
+			else
+			{
+				MSG("INFO: Package[%d] CRC BAD.\n",i);
+				continue;
+			}
 		}
 		SHOW_LINE;
 	}

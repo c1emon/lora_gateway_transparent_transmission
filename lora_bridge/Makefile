@@ -39,13 +39,16 @@ $(LGW_PATH)/libloragw.a: $(LGW_INC)
 
 ### Main program compilation and assembly
 
-$(OBJDIR)/parson.o: src/parson.c inc/parson.h
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+
+$(OBJDIR)/parson.o: src/parson.c inc/parson.h | $(OBJDIR)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(OBJDIR)/parson_config.o: src/parson_config.c inc/parson_config.h
+$(OBJDIR)/parson_config.o: src/parson_config.c inc/parson_config.h | $(OBJDIR)
 	$(CC) -c $(CFLAGS) -I$(LGW_PATH)/inc $< -o $@
 
-$(OBJDIR)/$(APP_NAME).o: src/$(APP_NAME).c $(LGW_INC) inc/parson.h inc/parson_config.h
+$(OBJDIR)/$(APP_NAME).o: src/$(APP_NAME).c $(LGW_INC) inc/parson.h inc/parson_config.h | $(OBJDIR)
 	$(CC) -c $(CFLAGS) -I$(LGW_PATH)/inc $< -o $@
 
 $(APP_NAME): $(OBJDIR)/$(APP_NAME).o $(LGW_PATH)/libloragw.a $(OBJDIR)/parson.o $(OBJDIR)/parson_config.o

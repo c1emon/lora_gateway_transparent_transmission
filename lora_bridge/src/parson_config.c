@@ -327,7 +327,7 @@ void parseJSON_configLoraStd(const JSON_Object *rootObject, struct lgw_conf_rxif
 		MSG("INFO : pSX1301_configLoraStd->freq_hz    = %d\n", pSX1301_configLoraStd->freq_hz);
 		MSG("INFO : pSX1301_configLoraStd->bandwidth  = %d\n", pSX1301_configLoraStd->bandwidth);
 		MSG("INFO : pSX1301_configLoraStd->datarate   = %d\n", pSX1301_configLoraStd->datarate);
-		MSG("INFO : pSX1301_configLoraStd->sync_word  = %d\n", pSX1301_configLoraStd->sync_word);
+		MSG("INFO : pSX1301_configLoraStd->sync_word  = %ld\n", pSX1301_configLoraStd->sync_word);
 		MSG("INFO : pSX1301_configLoraStd->sync_word_size  = %d\n", pSX1301_configLoraStd->sync_word_size);
 
 		SHOW_LINE;
@@ -401,7 +401,7 @@ void parseJSON_configFSK(const JSON_Object *rootObject, struct lgw_conf_rxif_s *
 		SHOW_LINE;
 }
 
-static int isIPAddress(char *raw_str)
+static int isIPAddress(const char *raw_str)
 {
 
 	char str[16] = {0};
@@ -472,6 +472,6 @@ void parseJSON_configNET(const JSON_Object *rootObject, struct net_info_s *pnet_
 	}
 
 	MSG("INFO: Ip address : %s\n", pnet_info->ip_addr);
-	MSG("INFO: port_down = %d\n", pnet_info->port_down);
-	MSG("INFO: port_up = %d\n", pnet_info->port_up);
+	MSG("INFO: port_down = %ld\n", pnet_info->port_down);
+	MSG("INFO: port_up = %ld\n", pnet_info->port_up);
 }
