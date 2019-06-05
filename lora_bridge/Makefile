@@ -8,7 +8,8 @@ AR := $(CROSS_COMPILE)ar
 OBJDIR = obj
 INCLUDES = $(wildcard inc/*.h)
 OBJECTS = $(wildcard src/*.c)
-INCOBJS = $(filter-out src/$(APP_NAME).o,$(OBJECTS:.c=.o))
+SRCOBJS = $(filter-out src/$(APP_NAME).o,$(OBJECTS:.c=.o))
+OBJOBJECTS = $(patsubst src/%,$(OBJDIR)/%,$(SRCOBJS))
 
 CFLAGS=-O2 -Wall -Wextra -std=c99 -Iinc -I.
 
@@ -49,8 +50,8 @@ $(OBJDIR)/%.o: src/%.c $(INCLUDES) | $(OBJDIR)
 $(OBJDIR)/$(APP_NAME).o: src/$(APP_NAME).c $(LGW_INC) $(INCLUDES) | $(OBJDIR)
 	$(CC) -c $(CFLAGS) -I$(LGW_PATH)/inc $< -o $@
 
-$(APP_NAME): $(OBJDIR)/$(APP_NAME).o $(LGW_PATH)/libloragw.a $(OBJDIR)/parson.o $(OBJDIR)/parson_config.o
-	$(CC) -L$(LGW_PATH) $< $(OBJDIR)/parson.o $(OBJDIR)/parson_config.o -o $@ $(LIBS)
+$(APP_NAME): $(OBJDIR)/$(APP_NAME).o $(LGW_PATH)/libloragw.a $(OBJOBJECTS)
+	$(CC) -L$(LGW_PATH) $< $(OBJOBJECTS) -o $@ $(LIBS)
 
 ### EOF
 
