@@ -7,6 +7,8 @@ AR := $(CROSS_COMPILE)ar
 
 OBJDIR = obj
 INCLUDES = $(wildcard inc/*.h)
+OBJECTS = $(wildcard src/*.c)
+INCOBJS = $(filter-out src/$(APP_NAME).o,$(OBJECTS:.c=.o))
 
 CFLAGS=-O2 -Wall -Wextra -std=c99 -Iinc -I.
 
@@ -23,7 +25,6 @@ all : $(APP_NAME)
 clean:
 	rm -f obj/*.o
 	rm -f $(APP_NAME)
-	$(MAKE) clean -C $(LGW_PATH)
 
 ### HAL library (do no force multiple library rebuild even with 'make -B')
 
@@ -42,13 +43,10 @@ $(LGW_PATH)/libloragw.a: $(LGW_INC)
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
-$(OBJDIR)/parson.o: src/parson.c inc/parson.h | $(OBJDIR)
-	$(CC) -c $(CFLAGS) $< -o $@
-
-$(OBJDIR)/parson_config.o: src/parson_config.c inc/parson_config.h | $(OBJDIR)
+$(OBJDIR)/%.o: src/%.c $(INCLUDES) | $(OBJDIR)
 	$(CC) -c $(CFLAGS) -I$(LGW_PATH)/inc $< -o $@
 
-$(OBJDIR)/$(APP_NAME).o: src/$(APP_NAME).c $(LGW_INC) inc/parson.h inc/parson_config.h | $(OBJDIR)
+$(OBJDIR)/$(APP_NAME).o: src/$(APP_NAME).c $(LGW_INC) $(INCLUDES) | $(OBJDIR)
 	$(CC) -c $(CFLAGS) -I$(LGW_PATH)/inc $< -o $@
 
 $(APP_NAME): $(OBJDIR)/$(APP_NAME).o $(LGW_PATH)/libloragw.a $(OBJDIR)/parson.o $(OBJDIR)/parson_config.o
